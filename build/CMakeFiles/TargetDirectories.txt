@@ -1,3 +1,0 @@
-/Term2_stuff/Term2/proj5/ModelPredictiveControl/build/CMakeFiles/edit_cache.dir
-/Term2_stuff/Term2/proj5/ModelPredictiveControl/build/CMakeFiles/rebuild_cache.dir
-/Term2_stuff/Term2/proj5/ModelPredictiveControl/build/CMakeFiles/mpc.dir

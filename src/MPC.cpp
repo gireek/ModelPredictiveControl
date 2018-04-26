@@ -20,7 +20,7 @@ double dt = 0.03;
 //
 // This is the length from front to CoG that has a similar radius.
 const double Lf = 2.67;
-const double ref_v = 100;
+const double ref_v = 105;
 size_t x_start = 0;
 size_t y_start = x_start + N;
 size_t psi_start = y_start + N;
@@ -46,7 +46,7 @@ class FG_eval {
 
     // The part of the cost based on the reference state.
     for (int t = 0; t < N; t++) {
-      fg[0] += 10000 * CppAD::pow(vars[cte_start + t], 2);
+      fg[0] += 12000 * CppAD::pow(vars[cte_start + t], 2);
       fg[0] += 10000 * CppAD::pow(vars[epsi_start + t], 2);
       fg[0] += 2 * CppAD::pow(vars[v_start + t] - ref_v, 2);
     }
@@ -251,5 +251,4 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs)
     }
 
     return result;
-
 }

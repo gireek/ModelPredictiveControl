@@ -2,6 +2,67 @@
 Self-Driving Car Engineer Nanodegree Program
 
 ---
+## Reflection
+
+* The simulator provides the following data as an input to the program:
+
+    ptsx (Array) - The global x positions of the waypoints.
+    ptsy (Array) - The global y positions of the waypoints.
+    psi (float) - The orientation of the vehicle in radians
+    x (float) - The global x position of the vehicle.
+    y (float) - The global y position of the vehicle.
+    steering_angle (float) - The current steering angle in radians.
+    throttle (float) - The current throttle value [-1, 1].
+
+
+* The coordinates sent by the simulator are global coordinates of the map used by the simulator and they must be transformed to the vehicle's coordinates for computation of the error costs.
+
+for (int i = 0; i < ptsx.size(); i++){
+            double x_ = ptsx[i] - px;
+            double y_ = ptsy[i] - py;
+            ptsx_t[i] = x_ * cos(-psi) - y_ * sin(-psi);
+            ptsy_t[i] = x_ * sin(-psi) + y_ * cos(-psi);
+}
+
+The polyfit() function is used to obtain the coefficients of a polynomial curve of degree 3 that best fits the waypoints. This is required trajectory for vehicle to stay on track. CTE is the derivative of the polynomial and the psi error is the - arctan of the derivative of the polynomial.
+
+* A 100 ms latency is introduced in the program. The following equations describe the predicted latency state:
+
+	  double lat = 0.100;
+          double lat_px = v * lat;
+          double lat_py = 0.0;
+          double lat_psi = v * -delta / Lf * lat;
+          double lat_v = v + a * lat;
+          double lat_cte = cte + v * sin(epsi) * lat;
+          double lat_epsi = epsi + v * -delta / Lf * lat;
+
+* The cost function - This part of the project was more interesting than all the past 4 projects in Term 2 combined. The intuition behind the one single factor that made my car to go at speeds of 90 mph smoothly and very elegantly slow down at curves was the addition of the factor of product of velocity and delta at a specific position. This made velocity less when curve was sharp and and velocity more otherwise and since my ref_v which is considered as standard by another cost function made the car run fast at other instances. My ref_v was finally set at 105. Other parameters I have taken are very crazy numbers ranging from 2 to 12000 and they have been reached after numerous tries of understanding giving importance to which part in the cost will give the desired behaviour. This is what I would state as the meat of this project and is given as follows:
+
+for (int t = 0; t < N; t++) {
+      fg[0] += 12000 * CppAD::pow(vars[cte_start + t], 2);
+      fg[0] += 10000 * CppAD::pow(vars[epsi_start + t], 2);
+      fg[0] += 2 * CppAD::pow(vars[v_start + t] - ref_v, 2);
+    }
+
+
+    for (int t = 0; t < N - 1; t++) {
+      fg[0] += 20 * CppAD::pow(vars[delta_start + t], 2);
+      fg[0] += 20 * CppAD::pow(vars[a_start + t], 2);
+      fg[0] += 1700 * CppAD::pow(vars[delta_start + t] * vars[v_start + t], 2);     // The game changing code line
+    }
+
+    for (int t = 0; t < N - 2; t++) {
+      fg[0] += 2000 * CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
+      fg[0] += CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
+    }
+
+* N and dt
+
+Initially I thought that long duration will givee better results. I selected various combinations on (N, dt) such as (25, 0.05), (20,0.1) , (30 , 0.03), (20 , 0.03) and so on. Greater N is causing the model to slow down, while reducing dt was causing the model to preform worse. Eventually the optimal I could get was by using (N=20, dt=0.03) which essentially was a prediction for 0.6 second.
+
+* Conclusion
+
+The final model was able to drive the vehicle correctly in the simulator with speed reaching over 90 miles an hour. The ride was smooth and there were no sudden jerks or turns. The vehicle always stayed on track.
 
 ## Dependencies
 
