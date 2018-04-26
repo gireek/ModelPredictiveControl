@@ -14,19 +14,20 @@ Self-Driving Car Engineer Nanodegree Program
     steering_angle (float) - The current steering angle in radians.
     throttle (float) - The current throttle value [-1, 1].
 
-
 * The coordinates sent by the simulator are global coordinates of the map used by the simulator and they must be transformed to the vehicle's coordinates for computation of the error costs.
 
-for (int i = 0; i < ptsx.size(); i++){
+	for (int i = 0; i < ptsx.size(); i++){
             double x_ = ptsx[i] - px;
             double y_ = ptsy[i] - py;
             ptsx_t[i] = x_ * cos(-psi) - y_ * sin(-psi);
             ptsy_t[i] = x_ * sin(-psi) + y_ * cos(-psi);
-}
+	}
 
 The polyfit() function is used to obtain the coefficients of a polynomial curve of degree 3 that best fits the waypoints. This is required trajectory for vehicle to stay on track. CTE is the derivative of the polynomial and the psi error is the - arctan of the derivative of the polynomial.
 
-* A 100 ms latency is introduced in the program. The following equations describe the predicted latency state:
+* Latency
+
+A 100 ms latency is introduced in the program. The following equations describe the predicted latency state:
 
 	  double lat = 0.100;
           double lat_px = v * lat;
@@ -36,14 +37,15 @@ The polyfit() function is used to obtain the coefficients of a polynomial curve 
           double lat_cte = cte + v * sin(epsi) * lat;
           double lat_epsi = epsi + v * -delta / Lf * lat;
 
-* The cost function - This part of the project was more interesting than all the past 4 projects in Term 2 combined. The intuition behind the one single factor that made my car to go at speeds of 90 mph smoothly and very elegantly slow down at curves was the addition of the factor of product of velocity and delta at a specific position. This made velocity less when curve was sharp and and velocity more otherwise and since my ref_v which is considered as standard by another cost function made the car run fast at other instances. My ref_v was finally set at 105. Other parameters I have taken are very crazy numbers ranging from 2 to 12000 and they have been reached after numerous tries of understanding giving importance to which part in the cost will give the desired behaviour. This is what I would state as the meat of this project and is given as follows:
+* The cost function 
 
-for (int t = 0; t < N; t++) {
+This part of the project was more interesting than all the past 4 projects in Term 2 combined. The intuition behind the one single factor that made my car to go at speeds of 90 mph smoothly and very elegantly slow down at curves was the addition of the factor of product of velocity and delta at a specific position. This made velocity less when curve was sharp and and velocity more otherwise and since my ref_v which is considered as standard by another cost function made the car run fast at other instances. My ref_v was finally set at 105. Other parameters I have taken are very crazy numbers ranging from 2 to 12000 and they have been reached after numerous tries of understanding giving importance to which part in the cost will give the desired behaviour. This is what I would state as the meat of this project and is given as follows:
+
+    for (int t = 0; t < N; t++) {
       fg[0] += 12000 * CppAD::pow(vars[cte_start + t], 2);
       fg[0] += 10000 * CppAD::pow(vars[epsi_start + t], 2);
       fg[0] += 2 * CppAD::pow(vars[v_start + t] - ref_v, 2);
     }
-
 
     for (int t = 0; t < N - 1; t++) {
       fg[0] += 20 * CppAD::pow(vars[delta_start + t], 2);
