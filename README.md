@@ -6,15 +6,15 @@ Self-Driving Car Engineer Nanodegree Program
 
 * The simulator provides the following data as an input to the program:
 
-    ptsx (Array) - The global x positions of the waypoints.
-    ptsy (Array) - The global y positions of the waypoints.
-    psi (float) - The orientation of the vehicle in radians
-    x (float) - The global x position of the vehicle.
-    y (float) - The global y position of the vehicle.
-    steering_angle (float) - The current steering angle in radians.
-    throttle (float) - The current throttle value [-1, 1].
+    * ptsx (Array) - The global x positions of the waypoints.
+    * ptsy (Array) - The global y positions of the waypoints.
+    * psi (float) - The orientation of the vehicle in radians
+    * x (float) - The global x position of the vehicle.
+    * y (float) - The global y position of the vehicle.
+    * steering_angle (float) - The current steering angle in radians.
+    * throttle (float) - The current throttle value [-1, 1].
 
-* The coordinates sent by the simulator are global coordinates of the map used by the simulator and they must be transformed to the vehicle's coordinates for computation of the error costs.
+* The coordinates sent by the simulator are global coordinates of the map used by the simulator and they must be transformed to the vehicle's coordinates for computation of the error costs. Represented by the following:
 
 	for (int i = 0; i < ptsx.size(); i++){
             double x_ = ptsx[i] - px;
